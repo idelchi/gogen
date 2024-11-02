@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/idelchi/gocry/internal/encrypt"
-	"github.com/idelchi/gocry/pkg/key"
 	"github.com/idelchi/godyl/pkg/pretty"
+	"github.com/idelchi/gogen/pkg/hash"
+	"github.com/idelchi/gogen/pkg/key"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -16,31 +16,20 @@ func flags() *cobra.Command {
 	cfg := &Config{}
 	root := newRootCmd(cfg)
 
-	// Persistent flags shared across encrypt/decrypt commands
-	root.Flags().StringP("key", "k", "", "Encryption key")
-	root.Flags().StringP("key-file", "f", "", "Path to the key file with the encryption key")
-	root.Flags().StringP("mode", "m", "file", "Mode of operation: file or line")
 	root.Flags().BoolP("show", "s", false, "Show the configuration and exit")
-	root.Flags().StringP("encrypt", "e", "### DIRECTIVE: ENCRYPT", "Directives for encryption")
-	root.Flags().StringP("decrypt", "d", "### DIRECTIVE: DECRYPT", "Directives for decryption")
 
-	encrypt := newEncryptCmd(cfg)
-	decrypt := newDecryptCmd(cfg)
-	generate := newGenerateCmd()
+	password := newPasswordCmd(cfg)
+	generate := newGenerateCmd(cfg)
 
-	root.AddCommand(encrypt, decrypt, generate)
+	root.AddCommand(password, generate)
+
+	generate.Flags().IntP("length", "l", 32, "Length of the key to generate")
+	password.Flags().IntP("cost", "c", 12, "Cost of the password hash (4-31)")
+	password.Flags().BoolP("benchmark", "b", false, "Run a benchmark on the password hash")
 
 	root.CompletionOptions.DisableDefaultCmd = true
 	root.SetVersionTemplate("{{ .Version }}\n")
 	root.Flags().SortFlags = false
-
-	// generate.SetHelpFunc(func(command *cobra.Command, strings []string) {
-	// 	command.Flags().MarkHidden("key")
-	// 	command.Flags().MarkHidden("mode")
-	// 	command.Flags().MarkHidden("encrypt")
-	// 	command.Flags().MarkHidden("decrypt")
-	// 	command.Parent().HelpFunc()(command, strings)
-	// })
 
 	return root
 }
@@ -67,19 +56,14 @@ func validate(cfg *Config) error {
 
 func newRootCmd(_ *Config) *cobra.Command {
 	root := &cobra.Command{
-		SilenceUsage:     true,
-		SilenceErrors:    true,
+		// SilenceUsage: true,
+		// SilenceErrors:    true,
 		Version:          version,
-		Use:              "gonc [flags] command [flags]",
-		Short:            "File/line encryption utility",
-		Long:             "gonc is a utility for encrypting and decrypting files or lines of text.",
+		Use:              "gogen [flags] command [flags]",
+		Short:            "",
+		Long:             "g",
 		TraverseChildren: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			// Skip config processing for generate command
-			if cmd.Name() == "generate" {
-				return nil
-			}
-
 			viper.SetEnvPrefix(cmd.Root().Name())
 			viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 			viper.AutomaticEnv()
@@ -102,16 +86,15 @@ func newRootCmd(_ *Config) *cobra.Command {
 	return root
 }
 
-func newEncryptCmd(cfg *Config) *cobra.Command {
+func newPasswordCmd(cfg *Config) *cobra.Command {
 	return &cobra.Command{
-		Use:     "encrypt file",
-		Aliases: []string{"enc"},
-		Short:   "Encrypt files",
-		Long:    "Encrypt a file using the specified key. Output is printed to stdout.",
+		Use:     "password [flags] password",
+		Aliases: []string{"pwd"},
+		Short:   "",
+		Long:    "",
 		Args:    cobra.ExactArgs(1),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			cfg.Operation = encrypt.Encrypt
-			cfg.File = args[0]
+			cfg.Password.Password = args[0]
 
 			if err := validate(cfg); err != nil {
 				return err
@@ -120,46 +103,66 @@ func newEncryptCmd(cfg *Config) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return processFiles(cfg)
-		},
-	}
-}
+			if cfg.Password.Benchmark {
+				hash.Benchmark(cfg.Password.Password, 4, 31)
 
-func newDecryptCmd(cfg *Config) *cobra.Command {
-	return &cobra.Command{
-		Use:     "decrypt file",
-		Aliases: []string{"dec"},
-		Short:   "Decrypt files",
-		Long:    "Decrypt a file using the specified key. Output is printed to stdout.",
-		Args:    cobra.ExactArgs(1),
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			cfg.Operation = encrypt.Decrypt
-			cfg.File = args[0]
-
-			if err := validate(cfg); err != nil {
-				return err
+				return nil
 			}
+
+			hash, err := hash.Password(cfg.Password.Password, cfg.Password.Cost)
+			if err != nil {
+				return fmt.Errorf("generating hash: %w", err)
+			}
+			fmt.Printf(hash)
 
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return processFiles(cfg)
-		},
 	}
 }
 
-func newGenerateCmd() *cobra.Command {
+func newGenerateCmd(cfg *Config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "generate",
-		Aliases: []string{"gen"},
-		Short:   "Generate a new encryption key",
-		Args:    cobra.NoArgs,
+		Use:   "key",
+		Short: "",
+		Args:  cobra.NoArgs,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := validate(cfg); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			key, err := key.GenerateHex(32)
+			key, err := key.New(cfg.Generate.Length)
 			if err != nil {
 				return fmt.Errorf("generating key: %w", err)
 			}
-			fmt.Printf(key)
+			fmt.Printf(key.AsHex())
+
+			return nil
+		},
+	}
+	return cmd
+}
+
+func newJWTCmd(cfg *Config) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "jwt",
+		Short: "",
+		Args:  cobra.NoArgs,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := validate(cfg); err != nil {
+				return err
+			}
+
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			key, err := key.New(cfg.Generate.Length)
+			if err != nil {
+				return fmt.Errorf("generating key: %w", err)
+			}
+			fmt.Printf(key.AsHex())
 
 			return nil
 		},

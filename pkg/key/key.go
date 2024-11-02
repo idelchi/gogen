@@ -7,11 +7,19 @@ import (
 	"strings"
 )
 
-// Decode decodes a hex-encoded key string into bytes
-func Decode(hexKey []byte) ([]byte, error) {
-	hexString := strings.TrimSpace(string(hexKey))
+type Key []byte
 
-	key, err := hex.DecodeString(hexString)
+func New(length int) (Key, error) {
+	key, err := generate(length)
+	if err != nil {
+		return nil, err
+	}
+
+	return key, nil
+}
+
+func FromHex(hexKey string) (Key, error) {
+	key, err := hex.DecodeString(strings.TrimSpace(string(hexKey)))
 	if err != nil {
 		return nil, fmt.Errorf("invalid hex key: %w", err)
 	}
@@ -19,9 +27,8 @@ func Decode(hexKey []byte) ([]byte, error) {
 	return key, nil
 }
 
-// Encode encodes a key as a hex string
-func Encode(key []byte) string {
-	return hex.EncodeToString(key)
+func (k *Key) AsHex() string {
+	return hex.EncodeToString((*k))
 }
 
 // generate generates a 32-byte key for AES-256 encryption.
@@ -32,14 +39,4 @@ func generate(length int) ([]byte, error) {
 		return nil, fmt.Errorf("error generating key: %w", err)
 	}
 	return key, nil
-}
-
-// GenerateString generates and returns a hex-encoded key
-func GenerateHex(length int) (string, error) {
-	key, err := generate(length)
-	if err != nil {
-		return "", err
-	}
-
-	return Encode(key), nil
 }
