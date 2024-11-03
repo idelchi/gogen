@@ -10,11 +10,17 @@ A tool for generating cryptographic keys and password hashes.
 go install github.com/idelchi/gogen/cmd/gogen@latest
 ```
 
+### From installation script
+
+````sh
+curl -sSL https://raw.githubusercontent.com/idelchi/gogen/refs/heads/dev/install.sh | sh -s -- -d ~/.local/bin
+```
+
 ## Usage
 
 ```sh
 gogen [flags] command [flags]
-```
+````
 
 ### Global Flags
 
