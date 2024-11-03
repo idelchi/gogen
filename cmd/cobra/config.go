@@ -10,7 +10,7 @@ import (
 var ErrUsage = errors.New("usage error")
 
 type Generate struct {
-	Length int
+	Length int `validate:"min=32,max=512,multiple=4"`
 }
 
 type Password struct {
@@ -26,8 +26,20 @@ type Config struct {
 	Password Password `mapstructure:",squash"`
 }
 
-func (c *Config) Validate() error {
-	errs := validator.NewValidator().Validate(c)
+func Validate(c any) error {
+	validator := validator.NewValidator()
+	validator.Validator().RegisterValidation("multiple", validateMultiple32)
+
+	// Register the multiple validation with a nice error message
+	if err := validator.RegisterValidationAndTranslation(
+		"multiple",
+		validateMultiple32,
+		"{0} must be a multiple of {1} bytes",
+	); err != nil {
+		return fmt.Errorf("registering validation: %w", err)
+	}
+
+	errs := validator.Validate(c)
 
 	switch {
 	case errs == nil:
@@ -40,4 +52,15 @@ func (c *Config) Validate() error {
 	}
 
 	return nil
+}
+
+func validateMultiple32(fl validator.FieldLevel) bool {
+	value := fl.Field().Int()
+
+	// Must be a multiple of 32 bits (4 bytes)
+	if value%4 != 0 {
+		return false
+	}
+
+	return true
 }

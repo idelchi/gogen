@@ -13,6 +13,8 @@ import (
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 )
 
+type FieldLevel = validator.FieldLevel
+
 // Validator wraps the go-playground/validator functionality with translation support.
 // It holds both the validator instance and a translator for converting validation
 // errors into human-readable messages.
@@ -87,4 +89,40 @@ func (v *Validator) Validate(c any) []error {
 	}
 
 	return nil
+}
+
+// RegisterValidationAndTranslation registers both a validation function and its error message translation.
+// It simplifies the process of adding custom validations with proper error messages.
+//
+// Parameters:
+//   - tag: the validation tag to use in struct field tags
+//   - fn: the validation function that implements the validation logic
+//   - msgTemplate: the error message template (use {0} for the field name and {1} for the parameter)
+//
+// Example usage:
+//
+//	validator.RegisterValidationAndTranslation(
+//	    "multiple",
+//	    validateMultiple,
+//	    "{0} must be a multiple of {1}"
+//	)
+func (v *Validator) RegisterValidationAndTranslation(tag string, fn validator.Func, msgTemplate string) error {
+	// Register the validation function
+	if err := v.validate.RegisterValidation(tag, fn); err != nil {
+		return err
+	}
+
+	// Register the translation
+	return v.validate.RegisterTranslation(tag, v.translator,
+		// RegisterTranslation
+		func(ut ut.Translator) error {
+			return ut.Add(tag, msgTemplate, true)
+		},
+		// Translation
+		func(ut ut.Translator, fe validator.FieldError) string {
+			param := fe.Param()
+			t, _ := ut.T(tag, fe.Field(), param)
+			return t
+		},
+	)
 }

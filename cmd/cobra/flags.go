@@ -34,7 +34,7 @@ func flags() *cobra.Command {
 	return root
 }
 
-func validate(cfg *Config) error {
+func validate(cfg *Config, validations ...any) error {
 	if err := viper.Unmarshal(cfg); err != nil {
 		return fmt.Errorf("unmarshalling config: %w", err)
 	}
@@ -47,8 +47,10 @@ func validate(cfg *Config) error {
 		return nil
 	}
 
-	if err := cfg.Validate(); err != nil {
-		return fmt.Errorf("validating config: %w\nSee --help for more info on usage.", err)
+	for _, v := range validations {
+		if err := Validate(v); err != nil {
+			return fmt.Errorf("validating config: %w\nSee --help for more info on usage.", err)
+		}
 	}
 
 	return nil
@@ -56,8 +58,8 @@ func validate(cfg *Config) error {
 
 func newRootCmd(_ *Config) *cobra.Command {
 	root := &cobra.Command{
-		// SilenceUsage: true,
-		// SilenceErrors:    true,
+		SilenceUsage:     true,
+		SilenceErrors:    true,
 		Version:          version,
 		Use:              "gogen [flags] command [flags]",
 		Short:            "",
@@ -96,7 +98,7 @@ func newPasswordCmd(cfg *Config) *cobra.Command {
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			cfg.Password.Password = args[0]
 
-			if err := validate(cfg); err != nil {
+			if err := validate(cfg, &cfg.Password); err != nil {
 				return err
 			}
 
@@ -104,7 +106,7 @@ func newPasswordCmd(cfg *Config) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if cfg.Password.Benchmark {
-				hash.Benchmark(cfg.Password.Password, 4, 31)
+				hash.Benchmark(cfg.Password.Password)
 
 				return nil
 			}
@@ -126,32 +128,7 @@ func newGenerateCmd(cfg *Config) *cobra.Command {
 		Short: "",
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := validate(cfg); err != nil {
-				return err
-			}
-
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			key, err := key.New(cfg.Generate.Length)
-			if err != nil {
-				return fmt.Errorf("generating key: %w", err)
-			}
-			fmt.Printf(key.AsHex())
-
-			return nil
-		},
-	}
-	return cmd
-}
-
-func newJWTCmd(cfg *Config) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "jwt",
-		Short: "",
-		Args:  cobra.NoArgs,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := validate(cfg); err != nil {
+			if err := validate(cfg, &cfg.Generate); err != nil {
 				return err
 			}
 
