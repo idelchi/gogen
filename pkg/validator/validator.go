@@ -7,6 +7,7 @@ package validator
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
@@ -110,19 +111,21 @@ func (v *Validator) RegisterValidationAndTranslation(tag string, fn validator.Fu
 
 	// Register the translation
 	if err := v.validate.RegisterTranslation(tag, v.translator,
-		// RegisterTranslation
 		func(ut ut.Translator) error {
 			if err := ut.Add(tag, msgTemplate, true); err != nil {
 				return fmt.Errorf("adding translation: %w", err)
 			}
-
 			return nil
 		},
-		// Translation
 		func(ut ut.Translator, fe validator.FieldError) string {
-			param := fe.Param()
-			t, _ := ut.T(tag, fe.Field(), param)
+			params := strings.Split(fe.Param(), ",")
+			param1 := params[0]
+			param2 := ""
+			if len(params) > 1 {
+				param2 = params[1]
+			}
 
+			t, _ := ut.T(tag, fe.Field(), param1, param2)
 			return t
 		},
 	); err != nil {
