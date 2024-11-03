@@ -1,6 +1,6 @@
 # gogen
 
-A Go tool for cryptographic key generation and password hashing.
+A tool for generating cryptographic keys and password hashes.
 
 ## Installation
 
@@ -16,22 +16,29 @@ go install github.com/idelchi/gogen/cmd/gogen@latest
 gogen [flags] command [flags]
 ```
 
-### Commands
-
-- `key`: Generate cryptographic keys
-- `hash`: Hash passwords using bcrypt
-
-### Available flags
+### Global Flags
 
 ```sh
---show, -s:    Show the configuration and exit
---version:     Show version information
+-s, --show      Show the configuration and exit
+-h, --help      Help for gogen
+-v, --version   Version for gogen
 ```
 
-### Key generation
+### Commands
 
-Generate cryptographic keys with configurable length:
+#### `key` - Generate a cryptographic key
 
+Generate keys of configurable length:
+
+```sh
+gogen key [flags]
+
+Flags:
+  -h, --help         Help for key command
+  -l, --length int   Length of the key to generate (default 32)
+```
+
+Examples:
 ```sh
 # Generate a 32-byte key (default)
 gogen key
@@ -39,13 +46,23 @@ gogen key
 # Generate a 64-byte key
 gogen key -l 64
 
-# Supported lengths: 32-512 bytes (must be multiple of 4)
+# Key length must be between 32-512 bytes and a multiple of 4
 ```
 
-### Password hashing
+#### `hash` - Hash a password
 
-Hash passwords using bcrypt with configurable cost:
+Hash passwords using bcrypt with configurable cost and benchmarking capabilities:
 
+```sh
+gogen hash [flags] password
+
+Flags:
+  -b, --benchmark   Run a benchmark on the password hash
+  -c, --cost int    Cost of the password hash (4-31) (default 12)
+  -h, --help        Help for hash command
+```
+
+Examples:
 ```sh
 # Hash a password with default cost (12)
 gogen hash mypassword
@@ -53,23 +70,22 @@ gogen hash mypassword
 # Hash with custom cost (4-31)
 gogen hash -c 14 mypassword
 
-# Run password hashing benchmark
+# Run benchmark to measure hashing performance across costs
 gogen hash -b mypassword
 ```
 
-### Environment variables
+### Environment Variables
 
-All flags can be set through environment variables with the `GOGEN` prefix:
+All flags can be configured through environment variables using the `GOGEN` prefix:
 
 - `GOGEN_SHOW`: Show configuration
-- `GOGEN_LENGTH`: Key length
-- `GOGEN_COST`: Bcrypt cost
-- `GOGEN_BENCHMARK`: Run benchmark
+- `GOGEN_LENGTH`: Key generation length
+- `GOGEN_COST`: Bcrypt cost factor
+- `GOGEN_BENCHMARK`: Enable benchmark mode
 
-For more details on usage and configuration:
+For detailed help on any command:
 
 ```sh
 gogen --help
-gogen key --help
-gogen hash --help
+gogen <command> --help
 ```

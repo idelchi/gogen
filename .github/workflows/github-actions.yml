@@ -1,4 +1,4 @@
-name: gocry
+name: gogen
 
 on:
   workflow_dispatch:
