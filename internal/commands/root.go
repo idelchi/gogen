@@ -27,11 +27,11 @@ func NewRootCommand(cfg *config.Config, version string) *cobra.Command {
 			viper.AutomaticEnv()
 
 			if err := viper.BindPFlags(cmd.Root().Flags()); err != nil {
-				return fmt.Errorf("failed to bind flags: %w", err)
+				return fmt.Errorf("binding root flags: %w", err)
 			}
 
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return fmt.Errorf("failed to bind persistent flags: %w", err)
+				return fmt.Errorf("binding command flags: %w", err)
 			}
 
 			return nil
