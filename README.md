@@ -1,179 +1,75 @@
 # gogen
 
-gocry is a command-line utility for encrypting and decrypting files using a specified key.
-
-It supports file encryption and line-by-line encryption based on directives within the file.
-
-The program outputs the processed content to standard output (stdout).
-
-Can be used as filters in git.
-
-`.gitconfig`
-
-```toml
-[filter "encrypt:line"]
-    clean = "gocry -m lines -o encrypt -k ~/.secrets/key %f"
-    smudge = "gocry -m lines -o decrypt -k ~/.secrets/key %f %f"
-    required = true
-
-[filter "encrypt:file"]
-    clean = "gocry -m file -o encrypt -k ~/.secrets/key %f"
-    smudge = "gocry -m file -o decrypt -k ~/.secrets/key %f %f"
-    required = true
-```
-
-`.gitattributes`
-
-```toml
-*                       filter=encrypt:line
-
-**/secrets/*            filter=encrypt:file
-```
+A Go tool for cryptographic key generation and password hashing.
 
 ## Installation
 
 ### From source
 
 ```sh
-go install github.com/idelchi/gocry@latest
+go install github.com/idelchi/gogen/cmd/gogen@latest
 ```
 
 ## Usage
 
 ```sh
-gocry [flags] [file]
+gogen [flags] command [flags]
 ```
 
-The available flags include:
+### Commands
 
-- `-m, --mode`: Mode of operation: "file" or "line" (default "file")
-- `-o, --operation`: Operation to perform: "encrypt" or "decrypt" (default "encrypt")
-- `-k, --key`: Path to the key file (required)
-- `-t, --type`: Encryption type: "deterministic" or "nondeterministic" (default "nondeterministic")
-- `--gpg`: Whether a GPG key is used for encryption/decryption (default true)
-- `--directives.encrypt`: Directives for encryption (default "### DIRECTIVE: ENCRYPT")
-- `--directives.decrypt`: Directives for decryption (default "### DIRECTIVE: DECRYPT")
-- `--version`: Show the version information and exit
-- `-h, --help`: Show the help information and exit
-- `-s, --show`: Show the configuration and exit
+- `key`: Generate cryptographic keys
+- `hash`: Hash passwords using bcrypt
 
-### Examples
-
-#### Encrypt a File
-
-Encrypt `input.txt` output the result to `encrypted.txt`:
+### Available flags
 
 ```sh
-gocry -k path/to/keyfile input.txt > encrypted.txt
+--show, -s:    Show the configuration and exit
+--version:     Show version information
 ```
 
-#### Decrypt a File
+### Key generation
 
-Decrypt `encrypted.txt` using the same key and output the result to `decrypted.txt`:
+Generate cryptographic keys with configurable length:
 
 ```sh
-gocry -o decrypt -k path/to/keyfile encrypted.txt > decrypted.txt
+# Generate a 32-byte key (default)
+gogen key
+
+# Generate a 64-byte key
+gogen key -l 64
+
+# Supported lengths: 32-512 bytes (must be multiple of 4)
 ```
 
-#### Encrypt Specific Lines in a File
+### Password hashing
 
-Encrypt lines in `input.txt` that contain the directive `### DIRECTIVE: ENCRYPT` and output the result to `encrypted.txt`:
+Hash passwords using bcrypt with configurable cost:
 
 ```sh
-gocry -m line -k path/to/keyfile input.txt > encrypted.txt
+# Hash a password with default cost (12)
+gogen hash mypassword
+
+# Hash with custom cost (4-31)
+gogen hash -c 14 mypassword
+
+# Run password hashing benchmark
+gogen hash -b mypassword
 ```
 
-#### Show the Configuration
+### Environment variables
 
-Display the current configuration based on the provided flags:
+All flags can be set through environment variables with the `GOGEN` prefix:
+
+- `GOGEN_SHOW`: Show configuration
+- `GOGEN_LENGTH`: Key length
+- `GOGEN_COST`: Bcrypt cost
+- `GOGEN_BENCHMARK`: Run benchmark
+
+For more details on usage and configuration:
 
 ```sh
-gocry -s -k path/to/keyfile input.txt
-```
-
-#### Display Help Information
-
-Show detailed help information:
-
-```sh
-gocry --help
-```
-
-## Directives for Line-by-Line Encryption
-
-When using `--mode line`, `gocry` processes only the lines that contain specific directives:
-
-- To encrypt a line, append `### DIRECTIVE: ENCRYPT` to the line.
-- To decrypt a line, it should start with `### DIRECTIVE: DECRYPT:` followed by the encrypted content.
-
-The directives themselves can be customized using the `--directives.encrypt` and `--directives.decrypt` flags.
-
-### Example Input File (input.txt):
-
-```
-This is a normal line.
-This line will be encrypted. ### DIRECTIVE: ENCRYPT
-Another normal line.
-```
-
-### Encrypting the File:
-
-```sh
-gocry -m line -k path/to/keyfile input.txt > encrypted.txt
-```
-
-### Resulting Output (encrypted.txt):
-
-```
-This is a normal line.
-### DIRECTIVE: DECRYPT: VGhpcyBsaW5lIHdpbGwgYmUgZW5jcnlwdGVkLiBPRmx2eGZpRk9GMkF3PT0=
-Another normal line.
-```
-
-### Decrypting the File:
-
-```sh
-gocry -m line -o decrypt -k path/to/keyfile encrypted.txt > decrypted.txt
-```
-
-### Resulting Output (decrypted.txt):
-
-```
-This is a normal line.
-This line will be encrypted. ### DIRECTIVE: ENCRYPT
-Another normal line.
-```
-
-## Notes on Encryption Types
-
-### Deterministic Encryption (`--type deterministic`):
-
-- Uses a fixed initialization vector (IV) derived from the key.
-- Encrypting the same content multiple times produces the same ciphertext.
-- Useful when you need consistent encryption results for the same input.
-
-### Nondeterministic Encryption (`--type nondeterministic`):
-
-- Uses a randomly generated IV.
-- Encrypting the same content multiple times produces different ciphertexts.
-- Provides better security by ensuring that identical plaintexts encrypt to different ciphertexts.
-
-## For More Details
-
-To display a comprehensive list of flags and their descriptions, run:
-
-```sh
-gocry --help
-```
-
-## Under the Hood
-
-gocry uses AES encryption in CFB (Cipher Feedback) mode. The key provided should be of appropriate length for AES (16, 24, or 32 bytes for AES-128, AES-192, or AES-256 respectively).
-
-## Generating a Key
-
-You can generate a key using OpenSSL or any other cryptographic library. Here's an example using OpenSSL to generate a 256-bit (32-byte) key:
-
-```sh
-openssl rand -out keyfile -base64 32
+gogen --help
+gogen key --help
+gogen hash --help
 ```
