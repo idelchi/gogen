@@ -1,0 +1,6 @@
+dictionaries:
+  - gogen-words
+
+dictionaryDefinitions:
+  - name: gogen-words
+    path: project-words

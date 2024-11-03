@@ -12,7 +12,7 @@ go install github.com/idelchi/gogen/cmd/gogen@latest
 
 ### From installation script
 
-````sh
+```sh
 curl -sSL https://raw.githubusercontent.com/idelchi/gogen/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin
 ```
 
@@ -20,7 +20,7 @@ curl -sSL https://raw.githubusercontent.com/idelchi/gogen/refs/heads/main/instal
 
 ```sh
 gogen [flags] command [flags]
-````
+```
 
 ### Global Flags
 
