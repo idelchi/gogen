@@ -16,7 +16,7 @@ jobs:
 
   cleanup:
     uses: idelchi/devenv/.github/workflows/cleanup.yml@dev
-    if: github.ref == 'refs/heads/boss'
+    if: github.ref == 'refs/heads/dev'
     needs: info
     permissions:
       actions: write
