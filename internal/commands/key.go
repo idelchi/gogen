@@ -3,9 +3,10 @@ package commands
 import (
 	"fmt"
 
+	"github.com/spf13/cobra"
+
 	"github.com/idelchi/gogen/internal/config"
 	"github.com/idelchi/gogen/pkg/key"
-	"github.com/spf13/cobra"
 )
 
 // NewKeyCommand creates the key generation subcommand.
@@ -16,18 +17,24 @@ func NewKeyCommand(cfg *config.Config) *cobra.Command {
 		Short: "Generate a cryptographic key",
 		Long:  "Generate a cryptographic key of specified length",
 		Args:  cobra.NoArgs,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(_ *cobra.Command, _ []string) error {
 			return validate(cfg, &cfg.Generate)
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			key, err := key.New(cfg.Generate.Length)
 			if err != nil {
 				return fmt.Errorf("generating key: %w", err)
 			}
-			fmt.Printf(key.AsHex())
+
+			fmt.Print(key.AsHex()) //nolint: forbidigo
 
 			return nil
 		},
 	}
+
+	const length = 32
+
+	cmd.Flags().IntP("length", "l", length, "Length of the key to generate")
+
 	return cmd
 }

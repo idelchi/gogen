@@ -14,7 +14,7 @@
 //	}
 //
 //	// Benchmark hashing performance
-//	hash.Benchmark("mypassword")
+//	hash.Benchmark("password")
 //
 // Note that bcrypt has an upper limit on password length of 72 bytes.
 package hash
@@ -48,6 +48,8 @@ func Password(password string, cost int) (string, error) {
 // using bcrypt with different cost factors. It tests all valid cost factors
 // from MinCost to MaxCost, measuring both hashing and verification time.
 // The output is formatted as a Markdown table.
+//
+//nolint:forbidigo
 func Benchmark(password string) {
 	pwd := []byte(password)
 

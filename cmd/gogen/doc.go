@@ -9,11 +9,11 @@
 //	gogen key -l 64
 //
 //	# Hash a password with default cost (12)
-//	gogen hash mypassword
+//	gogen hash password
 //
 //	# Hash a password with custom cost
-//	gogen hash -c 14 mypassword
+//	gogen hash -c 14 password
 //
 //	# Run password hashing benchmark
-//	gogen hash -b mypassword
+//	gogen hash -b password
 package main

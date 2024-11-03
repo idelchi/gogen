@@ -39,6 +39,7 @@ Flags:
 ```
 
 Examples:
+
 ```sh
 # Generate a 32-byte key (default)
 gogen key
@@ -63,15 +64,16 @@ Flags:
 ```
 
 Examples:
+
 ```sh
 # Hash a password with default cost (12)
-gogen hash mypassword
+gogen hash password
 
 # Hash with custom cost (4-31)
-gogen hash -c 14 mypassword
+gogen hash -c 14 password
 
 # Run benchmark to measure hashing performance across costs
-gogen hash -b mypassword
+gogen hash -b password
 ```
 
 ### Environment Variables

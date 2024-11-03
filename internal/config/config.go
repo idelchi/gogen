@@ -39,14 +39,14 @@ type Config struct {
 
 // Validate performs configuration validation using the validator package.
 // It returns a wrapped ErrUsage if any validation rules are violated.
-func Validate(c any) error {
+func Validate(config any) error {
 	validator := validator.NewValidator()
 
 	if err := registerMultiple32(validator); err != nil {
 		return fmt.Errorf("registering multiple32: %w", err)
 	}
 
-	errs := validator.Validate(c)
+	errs := validator.Validate(config)
 
 	switch {
 	case errs == nil:

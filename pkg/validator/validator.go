@@ -6,6 +6,7 @@ package validator
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
@@ -13,6 +14,10 @@ import (
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 )
 
+// ErrValidation is a sentinel error value used to identify validation errors.
+var ErrValidation = errors.New("validation error")
+
+// FieldLevel is a type alias for validator.FieldLevel.
 type FieldLevel = validator.FieldLevel
 
 // Validator wraps the go-playground/validator functionality with translation support.
@@ -38,7 +43,9 @@ func NewValidator() *Validator {
 	trans, _ := uni.GetTranslator("en")
 
 	validate := validator.New()
-	en_translations.RegisterDefaultTranslations(validate, trans)
+	if err := en_translations.RegisterDefaultTranslations(validate, trans); err != nil {
+		panic(err)
+	}
 
 	return &Validator{
 		validate:   validate,
@@ -50,39 +57,28 @@ func NewValidator() *Validator {
 // It translates the validation errors into human-readable messages using the
 // configured translator. Returns nil if there are no errors to format.
 func (v *Validator) FormatErrors(err error) []error {
-	errs := err.(validator.ValidationErrors)
+	var validationErrors validator.ValidationErrors
+	if !errors.As(err, &validationErrors) {
+		// If the error is not a ValidationErrors type, return it as a single error
+		return []error{err}
+	}
 
-	if len(errs) == 0 {
+	if len(validationErrors) == 0 {
 		return nil
 	}
 
-	errMap := errs.Translate(v.translator)
+	errMap := validationErrors.Translate(v.translator)
 
 	totalErrors := make([]error, 0, len(errMap))
 
 	for _, err := range errMap {
-		totalErrors = append(totalErrors, errors.New(err))
+		totalErrors = append(totalErrors, fmt.Errorf("%w: %s", ErrValidation, err))
 	}
 
 	return totalErrors
 }
 
 // Validate performs validation on the provided struct and returns any validation errors.
-// It uses struct tags to determine validation rules and returns formatted error messages.
-// If validation passes, it returns nil.
-//
-// Example usage:
-//
-//	type User struct {
-//	    Name  string `validate:"required"`
-//	    Email string `validate:"required,email"`
-//	}
-//
-//	validator := validator.NewValidator()
-//	user := User{Name: "John", Email: "invalid-email"}
-//	if errs := validator.Validate(user); errs != nil {
-//	    // Handle validation errors
-//	}
 func (v *Validator) Validate(c any) []error {
 	if err := v.validate.Struct(c); err != nil {
 		return v.FormatErrors(err)
@@ -109,20 +105,29 @@ func (v *Validator) Validate(c any) []error {
 func (v *Validator) RegisterValidationAndTranslation(tag string, fn validator.Func, msgTemplate string) error {
 	// Register the validation function
 	if err := v.validate.RegisterValidation(tag, fn); err != nil {
-		return err
+		return fmt.Errorf("registering validation: %w", err)
 	}
 
 	// Register the translation
-	return v.validate.RegisterTranslation(tag, v.translator,
+	if err := v.validate.RegisterTranslation(tag, v.translator,
 		// RegisterTranslation
 		func(ut ut.Translator) error {
-			return ut.Add(tag, msgTemplate, true)
+			if err := ut.Add(tag, msgTemplate, true); err != nil {
+				return fmt.Errorf("adding translation: %w", err)
+			}
+
+			return nil
 		},
 		// Translation
 		func(ut ut.Translator, fe validator.FieldError) string {
 			param := fe.Param()
 			t, _ := ut.T(tag, fe.Field(), param)
+
 			return t
 		},
-	)
+	); err != nil {
+		return fmt.Errorf("registering translation: %w", err)
+	}
+
+	return nil
 }

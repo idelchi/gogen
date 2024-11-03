@@ -47,7 +47,7 @@ func New(length int) (Key, error) {
 // It trims any whitespace from the input string before decoding.
 // Returns an error if the hex string is invalid.
 func FromHex(hexKey string) (Key, error) {
-	key, err := hex.DecodeString(strings.TrimSpace(string(hexKey)))
+	key, err := hex.DecodeString(strings.TrimSpace(hexKey))
 	if err != nil {
 		return nil, fmt.Errorf("invalid hex key: %w", err)
 	}
@@ -64,9 +64,10 @@ func (k *Key) AsHex() string {
 // It returns an error if the system's random number generator fails.
 func generate(length int) ([]byte, error) {
 	key := make([]byte, length)
-	_, err := rand.Read(key)
-	if err != nil {
+
+	if _, err := rand.Read(key); err != nil {
 		return nil, fmt.Errorf("error generating random bytes: %w", err)
 	}
+
 	return key, nil
 }
