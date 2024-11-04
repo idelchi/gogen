@@ -7,7 +7,7 @@ A tool for generating cryptographic keys and password hashes.
 ### From source
 
 ```sh
-go install github.com/idelchi/gogen/cmd/gogen@latest
+go install github.com/idelchi/gogen@latest
 ```
 
 ### From installation script
