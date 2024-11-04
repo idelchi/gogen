@@ -30,11 +30,15 @@ type Password struct {
 type Config struct {
 	// Show enables output display
 	Show bool
-
 	// Generate contains key generation settings
 	Generate Generate `mapstructure:",squash"`
 	// Password contains password hashing settings
 	Password Password `mapstructure:",squash"`
+}
+
+// Display returns the value of the Show field.
+func (c Config) Display() bool {
+	return c.Show
 }
 
 // Validate performs configuration validation using the validator package.

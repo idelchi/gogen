@@ -7,7 +7,6 @@ package validator
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
@@ -123,55 +122,6 @@ func (v *Validator) RegisterValidationAndTranslation(tag string, fn validator.Fu
 		func(ut ut.Translator, fe validator.FieldError) string {
 			param := fe.Param()
 			t, _ := ut.T(tag, fe.Field(), param)
-
-			return t
-		},
-	); err != nil {
-		return fmt.Errorf("registering translation: %w", err)
-	}
-
-	return nil
-}
-
-// RegisterValidationAndTranslation registers both a validation function and its error message translation.
-// It simplifies the process of adding custom validations with proper error messages.
-//
-// Parameters:
-//   - tag: the validation tag to use in struct field tags
-//   - fn: the validation function that implements the validation logic
-//   - msgTemplate: the error message template (use {0} for the field name and {1} for the parameter)
-//
-// Example usage:
-//
-//	validator.RegisterValidationAndTranslation(
-//	    "multiple",
-//	    validateMultiple,
-//	    "{0} must be a multiple of {1}"
-//	)
-func (v *Validator) RegisterValidationAndTranslation2(tag string, fn validator.Func, msgTemplate string) error {
-	// Register the validation function
-	if err := v.validate.RegisterValidation(tag, fn); err != nil {
-		return fmt.Errorf("registering validation: %w", err)
-	}
-
-	// Register the translation
-	if err := v.validate.RegisterTranslation(tag, v.translator,
-		func(ut ut.Translator) error {
-			if err := ut.Add(tag, msgTemplate, true); err != nil {
-				return fmt.Errorf("adding translation: %w", err)
-			}
-
-			return nil
-		},
-		func(ut ut.Translator, fe validator.FieldError) string {
-			params := strings.Split(fe.Param(), "/")
-			param1 := params[0]
-			param2 := ""
-			if len(params) > 1 {
-				param2 = params[1]
-			}
-
-			t, _ := ut.T(tag, fe.Field(), param1, param2)
 
 			return t
 		},

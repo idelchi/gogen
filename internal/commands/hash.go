@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/gogen/internal/config"
+	"github.com/idelchi/gogen/pkg/cobraext"
 	"github.com/idelchi/gogen/pkg/hash"
 )
 
@@ -20,7 +21,7 @@ func NewHashCommand(cfg *config.Config) *cobra.Command {
 		PreRunE: func(_ *cobra.Command, args []string) error {
 			cfg.Password.Password = args[0]
 
-			return validate(cfg, &cfg.Password)
+			return cobraext.Validate(cfg, &cfg.Password)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
 			if cfg.Password.Benchmark {

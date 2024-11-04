@@ -1,8 +1,8 @@
-package commands
+package cobraext
 
 import (
+	"errors"
 	"fmt"
-	"os"
 
 	"github.com/spf13/viper"
 
@@ -10,17 +10,25 @@ import (
 	"github.com/idelchi/gogen/internal/config"
 )
 
-// validate unmarshals the configuration and performs validation checks.
+// Displayer is an interface for types that can show their configuration.
+type Displayer interface {
+	Display() bool
+}
+
+// ErrExitGracefully is an error that signals the program to exit gracefully.
+var ErrExitGracefully = errors.New("exit")
+
+// Validate unmarshals the configuration and performs validation checks.
 // If cfg.Show is true, prints the configuration and exits.
-func validate(cfg *config.Config, validations ...any) error {
+func Validate(cfg Displayer, validations ...any) error {
 	if err := viper.Unmarshal(cfg); err != nil {
 		return fmt.Errorf("unmarshalling config: %w", err)
 	}
 
-	if cfg.Show {
+	if cfg.Display() {
 		pretty.PrintJSONMasked(cfg)
 
-		os.Exit(0) //nolint: forbidigo
+		return ErrExitGracefully
 	}
 
 	for _, v := range validations {
