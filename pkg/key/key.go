@@ -35,9 +35,15 @@ type Key []byte
 // New creates a new Key of the specified length using cryptographically secure random bytes.
 // It returns an error if the random number generator fails.
 func New(length int) (Key, error) {
-	key, err := generate(length)
+	key := make([]byte, length)
+
+	res, err := rand.Read(key)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error generating random bytes: %w", err)
+	}
+
+	if res != length {
+		return nil, fmt.Errorf("generated %d bytes instead of requested %d bytes", res, length) //nolint: err113
 	}
 
 	return key, nil
@@ -56,18 +62,6 @@ func FromHex(hexKey string) (Key, error) {
 }
 
 // AsHex returns the Key as a lowercase hexadecimal string.
-func (k *Key) AsHex() string {
-	return hex.EncodeToString((*k))
-}
-
-// generate creates a byte slice of the specified length filled with cryptographically secure random bytes.
-// It returns an error if the system's random number generator fails.
-func generate(length int) ([]byte, error) {
-	key := make([]byte, length)
-
-	if _, err := rand.Read(key); err != nil {
-		return nil, fmt.Errorf("error generating random bytes: %w", err)
-	}
-
-	return key, nil
+func (k Key) AsHex() string {
+	return hex.EncodeToString(k)
 }

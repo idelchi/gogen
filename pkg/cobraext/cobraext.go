@@ -76,5 +76,5 @@ func UnknownSubcommandAction(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return errors.New(err) // nolint: err113
+	return errors.New(err) //nolint: err113
 }
