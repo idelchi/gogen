@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/gogen/internal/config"
+	"github.com/idelchi/gogen/pkg/cobraext"
 	"github.com/idelchi/gogen/pkg/key"
 )
 
@@ -18,7 +19,7 @@ func NewKeyCommand(cfg *config.Config) *cobra.Command {
 		Long:  "Generate a cryptographic key of specified length",
 		Args:  cobra.NoArgs,
 		PreRunE: func(_ *cobra.Command, _ []string) error {
-			return validate(cfg, &cfg.Generate)
+			return cobraext.Validate(cfg, &cfg.Generate)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
 			key, err := key.New(cfg.Generate.Length)
