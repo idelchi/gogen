@@ -6,6 +6,8 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"github.com/andrew-d/go-termutil"
 )
 
 // IsPiped checks if something has been piped to stdin.
@@ -26,6 +28,10 @@ func MaybePiped() (bool, error) {
 		(stat.Mode()&(os.ModeCharDevice|os.ModeDir|os.ModeSymlink)) == 0
 
 	return isPipe, nil
+}
+
+func MaybePipedTermUtil() bool {
+	return !termutil.Isatty(os.Stdin.Fd())
 }
 
 // Read returns stdin as a string, trimming the trailing newline.
