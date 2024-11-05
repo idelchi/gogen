@@ -117,3 +117,18 @@ tasks:
       - task: tag
         vars:
           TAG: auto
+
+  delete:
+    cmds:
+      - cmd: |
+          gh release list --json tagName,isPrerelease \
+            -q '.[] | select(.isPrerelease == true) | .tagName' \
+            | xargs -I {} gh release delete {} --yes --cleanup-tag
+        ignore_error: true
+      - cmd: |
+          gh run list --limit 500 \
+            --status completed \
+            --json databaseId \
+            -q ".[].databaseId" \
+            | xargs -n 1 gh run delete
+        ignore_error: true
