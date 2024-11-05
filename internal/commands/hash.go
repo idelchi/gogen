@@ -16,9 +16,9 @@ import (
 // It handles password hashing with configurable cost and benchmarking.
 func NewHashCommand(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "hash [flags] password",
+		Use:   "hash [flags] [password|STDIN]",
 		Short: "Hash a password",
-		Long:  "Hash a password using bcrypt with configurable cost and benchmarking. Can read password from stdin.",
+		Long:  "Hash a password using bcrypt with configurable cost and benchmarking.",
 		Args:  cobra.MaximumNArgs(1),
 		PreRunE: func(_ *cobra.Command, args []string) error {
 			isPiped := stdin.IsPiped()
