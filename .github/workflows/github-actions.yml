@@ -38,6 +38,12 @@ jobs:
           echo "with file stdin"
           go run . < Taskfile.yml
 
+          name="Alice"
+          go run . <<EOF
+          Hello, $name!
+          This is a test input for the tool.
+          EOF
+
   # info:
   #   uses: idelchi/devenv/.github/workflows/info.yml@dev
 
