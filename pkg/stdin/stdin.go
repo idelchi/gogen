@@ -7,7 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/andrew-d/go-termutil"
+	isatty "github.com/mattn/go-isatty"
+
+	termutil "github.com/andrew-d/go-termutil"
 )
 
 // IsPiped checks if something has been piped to stdin.
@@ -32,6 +34,10 @@ func MaybePiped() (bool, error) {
 
 func MaybePipedTermUtil() bool {
 	return !termutil.Isatty(os.Stdin.Fd())
+}
+
+func MaybePipedIsAtty() bool {
+	return !isatty.IsTerminal(os.Stdin.Fd()) && !isatty.IsCygwinTerminal(os.Stdin.Fd())
 }
 
 // Read returns stdin as a string, trimming the trailing newline.

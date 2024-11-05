@@ -44,4 +44,6 @@ func main() {
 	fmt.Printf("stdin.MaybePiped()=%v, err=%v\n", isMaybePiped, err)
 
 	fmt.Printf("MaybePipedTermUtil=%v\n", stdin.MaybePipedTermUtil())
+
+	fmt.Printf("MaybePipedIsAtty=%v\n", stdin.MaybePipedIsAtty())
 }
