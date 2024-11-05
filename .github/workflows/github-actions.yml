@@ -31,8 +31,12 @@ jobs:
       - name: Test
         shell: sh
         run: |
+          echo "no stdin"
           go run .
+          echo "with piped stdin"
           echo "hello" | go run .
+          echo "with file stdin"
+          go run . < Taskfile.yml
 
   # info:
   #   uses: idelchi/devenv/.github/workflows/info.yml@dev
