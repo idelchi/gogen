@@ -3,12 +3,10 @@ module github.com/idelchi/gogen
 go 1.23.0
 
 require (
-	github.com/andrew-d/go-termutil v0.0.0-20150726205930-009166a695a2
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/idelchi/godyl v0.0.0-20241029091045-af98851a0cee
-	github.com/mattn/go-isatty v0.0.20
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	golang.org/x/crypto v0.28.0
