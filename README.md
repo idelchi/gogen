@@ -1,6 +1,11 @@
 # gogen
 
-A tool for generating cryptographic keys and password hashes.
+[![Go Reference](https://pkg.go.dev/badge/github.com/idelchi/gogen.svg)](https://pkg.go.dev/github.com/idelchi/gogen)
+[![Go Report Card](https://goreportcard.com/badge/github.com/idelchi/gogen)](https://goreportcard.com/report/github.com/idelchi/gogen)
+[![Build Status](https://github.com/idelchi/gogen/actions/workflows/github-actions.yml/badge.svg)](https://github.com/idelchi/gogen/actions/workflows/github-actions.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+`gogen` is a tool for generating cryptographic keys and password hashes.
 
 ## Installation
 
