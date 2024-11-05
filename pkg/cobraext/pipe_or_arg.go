@@ -3,7 +3,6 @@ package cobraext
 import (
 	"fmt"
 
-	"github.com/idelchi/gogen/pkg/printer"
 	"github.com/idelchi/gogen/pkg/stdin"
 )
 
@@ -14,10 +13,6 @@ func PipeOrArg(args []string) (string, error) {
 	switch {
 	case len(args) > 0:
 		// Prioritize argument if it exists, regardless of stdin
-		if isPiped {
-			printer.Stderrln("reading from argument, ignoring stdin")
-		}
-
 		return args[0], nil
 	case isPiped:
 		// No arg but stdin is piped
