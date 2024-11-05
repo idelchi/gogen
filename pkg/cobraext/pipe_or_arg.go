@@ -8,13 +8,12 @@ import (
 
 // PipeOrArg reads a password from either the first argument or stdin.
 func PipeOrArg(args []string) (string, error) {
-	isPiped := stdin.IsPiped()
-
-	switch {
-	case len(args) > 0:
+	if len(args) > 0 {
 		// Prioritize argument if it exists, regardless of stdin
 		return args[0], nil
-	case isPiped:
+	}
+
+	if stdin.IsPiped() {
 		// No arg but stdin is piped
 		arg, err := stdin.Read()
 		if err != nil {
