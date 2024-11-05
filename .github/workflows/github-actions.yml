@@ -31,15 +31,16 @@ jobs:
       - name: Test
         shell: sh
         run: |
-          echo "no stdin"
-          go run .
-          echo "with piped stdin"
-          echo "hello" | go run .
-          echo "with file stdin"
-          go run . < Taskfile.yml
 
+          go install .
+          echo "-----------------"
+          gogen
+          echo "hello" | gogen
+          echo "-----------------"
+          gogen < Taskfile.yml
+          echo "-----------------"
           name="Alice"
-          go run . <<EOF
+          gogen <<EOF
           Hello, $name!
           This is a test input for the tool.
           EOF
