@@ -47,7 +47,7 @@ func (c Config) Display() bool {
 
 // Validate performs configuration validation using the validator package.
 // It returns a wrapped ErrUsage if any validation rules are violated.
-func Validate(config any) error {
+func (c Config) Validate(config any) error {
 	validator := validator.NewValidator()
 
 	if err := registerMultiple(validator); err != nil {
