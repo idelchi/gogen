@@ -93,3 +93,12 @@ tasks:
 
   update:
     - task: git:update
+
+  tag:
+    cmds:
+      - gh release delete {{ .TAG }} --yes --cleanup-tag || true
+      - git tag -d {{ .TAG }} || true
+      - git tag {{ .TAG }}
+      - git push origin -f {{ .TAG }}
+    vars:
+      TAG: '{{.CLI_ARGS | default "v0.0.1"}}'

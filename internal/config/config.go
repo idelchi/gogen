@@ -19,9 +19,11 @@ type Generate struct {
 // Password holds parameters for password hashing operations.
 type Password struct {
 	// Password is the input password to be hashed
-	Password string `mapstructure:"-"`
+	Password string `mapstructure:"-" validate:"required"`
+
 	// Cost is the bcrypt work factor (4-31)
 	Cost int `validate:"min=4,max=31"`
+
 	// Benchmark indicates whether to run performance benchmarks
 	Benchmark bool
 }
@@ -30,8 +32,10 @@ type Password struct {
 type Config struct {
 	// Show enables output display
 	Show bool
+
 	// Generate contains key generation settings
 	Generate Generate `mapstructure:",squash"`
+
 	// Password contains password hashing settings
 	Password Password `mapstructure:",squash"`
 }

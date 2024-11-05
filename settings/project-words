@@ -10,5 +10,7 @@ godyl
 gogen
 idelchi
 nolint
+stderrln
+stdoutln
 unmarshalling
 unmarshals
