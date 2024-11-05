@@ -1,3 +1,5 @@
+# gogen
+
 [![Go Reference](https://pkg.go.dev/badge/github.com/idelchi/gogen.svg)](https://pkg.go.dev/github.com/idelchi/gogen)
 [![Go Report Card](https://goreportcard.com/badge/github.com/idelchi/gogen)](https://goreportcard.com/report/github.com/idelchi/gogen)
 [![Build Status](https://github.com/idelchi/gogen/actions/workflows/github-actions.yml/badge.svg)](https://github.com/idelchi/gogen/actions/workflows/github-actions.yml/badge.svg)
