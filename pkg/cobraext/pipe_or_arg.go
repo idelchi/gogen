@@ -6,7 +6,10 @@ import (
 	"github.com/idelchi/gogen/pkg/stdin"
 )
 
-// PipeOrArg reads a password from either the first argument or stdin.
+// PipeOrArg reads from either the first argument or stdin.
+// If an argument is provided, it is returned.
+// If no argument is provided but stdin is piped, the stdin content is returned.
+// If neither an argument nor stdin is provided, an empty string is returned.
 func PipeOrArg(args []string) (string, error) {
 	if len(args) > 0 {
 		// Prioritize argument if it exists, regardless of stdin
