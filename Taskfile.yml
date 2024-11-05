@@ -96,6 +96,7 @@ tasks:
 
   tag:
     cmds:
+      - gh release delete {{ .TAG }} --yes --cleanup-tag || true
       - git tag -d {{ .TAG }} || true
       - git tag {{ .TAG }}
       - git push origin -f {{ .TAG }}
