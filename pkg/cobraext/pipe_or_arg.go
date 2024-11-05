@@ -15,7 +15,7 @@ func PipeOrArg(args []string) (string, error) {
 	case len(args) > 0:
 		// Prioritize argument if it exists, regardless of stdin
 		if isPiped {
-			printer.Stderrln("reading password from argument, ignoring stdin")
+			printer.Stderrln("reading from argument, ignoring stdin")
 		}
 
 		return args[0], nil
@@ -23,7 +23,7 @@ func PipeOrArg(args []string) (string, error) {
 		// No arg but stdin is piped
 		arg, err := stdin.Read()
 		if err != nil {
-			return "", fmt.Errorf("reading password from stdin: %w", err)
+			return "", fmt.Errorf("reading from stdin: %w", err)
 		}
 
 		return arg, nil
