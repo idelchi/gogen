@@ -27,27 +27,26 @@ curl -sSL https://raw.githubusercontent.com/idelchi/gogen/refs/heads/main/instal
 gogen [flags] command [flags]
 ```
 
-### Global Flags
+### Global Flags and Environment Variables
 
-```sh
--s, --show      Show the configuration and exit
--h, --help      Help for gogen
--v, --version   Version for gogen
-```
+| Flag            | Environment Variable | Description                     | Default |
+| --------------- | -------------------- | ------------------------------- | ------- |
+| `-s, --show`    | `GOGEN_SHOW`         | Show the configuration and exit | `false` |
+| `-h, --help`    | -                    | Help for gogen                  | -       |
+| `-v, --version` | -                    | Version for gogen               | -       |
 
 ### Commands
 
 #### `key` - Generate a cryptographic key
 
-Generate keys of configurable length:
+Generate keys of configurable length.
 
-```sh
-gogen key [flags]
+**Flags and Environment Variables:**
 
-Flags:
-  -h, --help         Help for key command
-  -l, --length int   Length of the key to generate (default 32)
-```
+| Flag           | Environment Variable | Description                   | Default | Valid Range             |
+| -------------- | -------------------- | ----------------------------- | ------- | ----------------------- |
+| `-l, --length` | `GOGEN_LENGTH`       | Length of the key to generate | 32      | 32-512 (multiple of 32) |
+| `-h, --help`   | -                    | Help for key command          | -       | -                       |
 
 Examples:
 
@@ -63,16 +62,15 @@ gogen key -l 64
 
 #### `hash` - Hash a password
 
-Hash passwords using bcrypt with configurable cost and benchmarking capabilities:
+Hash passwords using bcrypt with configurable cost and benchmarking capabilities.
 
-```sh
-gogen hash [flags] password
+**Flags and Environment Variables:**
 
-Flags:
-  -b, --benchmark   Run a benchmark on the password hash
-  -c, --cost int    Cost of the password hash (4-31) (default 12)
-  -h, --help        Help for hash command
-```
+| Flag              | Environment Variable | Description                          | Default | Valid Range |
+| ----------------- | -------------------- | ------------------------------------ | ------- | ----------- |
+| `-c, --cost`      | `GOGEN_COST`         | Cost of the password hash            | 12      | 4-31        |
+| `-b, --benchmark` | `GOGEN_BENCHMARK`    | Run a benchmark on the password hash | `false` | -           |
+| `-h, --help`      | -                    | Help for hash command                | -       | -           |
 
 Examples:
 
@@ -86,15 +84,6 @@ gogen hash -c 14 password
 # Run benchmark to measure hashing performance across costs
 gogen hash -b password
 ```
-
-### Environment Variables
-
-All flags can be configured through environment variables using the `GOGEN` prefix:
-
-- `GOGEN_SHOW`: Show configuration
-- `GOGEN_LENGTH`: Key generation length
-- `GOGEN_COST`: Bcrypt cost factor
-- `GOGEN_BENCHMARK`: Enable benchmark mode
 
 For detailed help on any command:
 

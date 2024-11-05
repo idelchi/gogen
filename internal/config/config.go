@@ -12,8 +12,8 @@ var ErrUsage = errors.New("usage error")
 
 // Generate holds parameters for key generation.
 type Generate struct {
-	// Length specifies the key length in bytes (32-512, must be multiple of 4)
-	Length int `validate:"min=32,max=512,multiple=4"`
+	// Length specifies the key length in bytes (32-512, must be multiple of 32)
+	Length int `validate:"min=32,max=512,multiple=32"`
 }
 
 // Password holds parameters for password hashing operations.
@@ -47,11 +47,11 @@ func (c Config) Display() bool {
 
 // Validate performs configuration validation using the validator package.
 // It returns a wrapped ErrUsage if any validation rules are violated.
-func Validate(config any) error {
+func (c Config) Validate(config any) error {
 	validator := validator.NewValidator()
 
-	if err := registerMultiple32(validator); err != nil {
-		return fmt.Errorf("registering multiple32: %w", err)
+	if err := registerMultiple(validator); err != nil {
+		return fmt.Errorf("registering multiple: %w", err)
 	}
 
 	errs := validator.Validate(config)
