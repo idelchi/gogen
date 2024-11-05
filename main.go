@@ -40,10 +40,17 @@ func main2() {
 func main() {
 	fmt.Printf("stdin.IsPiped()=%v\n", stdin.IsPiped())
 
+	fmt.Printf("stdin.IsPipedPotentially()=%v\n", stdin.IsPipedPotentially())
+
 	isMaybePiped, err := stdin.MaybePiped()
 	fmt.Printf("stdin.MaybePiped()=%v, err=%v\n", isMaybePiped, err)
 
 	fmt.Printf("MaybePipedTermUtil=%v\n", stdin.MaybePipedTermUtil())
 
 	fmt.Printf("MaybePipedIsAtty=%v\n", stdin.MaybePipedIsAtty())
+
+	isPiped, isNull, err := stdin.IsPipedGithub()
+	fmt.Printf("stdin.IsPipedGithub(), isPiped=%v, isNull=%v, err=%v\n", isPiped, isNull, err)
+
+	fmt.Printf("IsInputFromStdin()=%v\n", stdin.IsInputFromStdin())
 }
