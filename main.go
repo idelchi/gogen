@@ -1,4 +1,4 @@
-// Command gogen provides cryptographic key generation, passwords generation and password hashing functionality.
+// Command gogen provides cryptographic key generation, password generation and hashing functionality.
 //
 // Usage:
 //

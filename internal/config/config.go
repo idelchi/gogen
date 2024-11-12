@@ -22,7 +22,7 @@ type Generate struct {
 	Length int `validate:"min=32,max=512,multiple=32"`
 }
 
-// Password holds parameters for password hashing operations.
+// Hash holds parameters for password hashing operations.
 type Hash struct {
 	// Password is the input password to be hashed
 	Password string `mapstructure:"-" validate:"required"`

@@ -5,38 +5,33 @@ package pw
 import (
 	"crypto/rand"
 	"errors"
+	"fmt"
 	"math/big"
 )
 
-// CharacterClass represents a set of characters that can be used in password generation.
-type CharacterClass struct {
-	// The set of valid characters for this class
-	chars string
-}
-
 const (
-	// charSetLower defines the set of lowercase ASCII letters
+	// charSetLower defines the set of lowercase ASCII letters.
 	charSetLower = "abcdefghijklmnopqrstuvwxyz"
 
-	// charSetUpper defines the set of uppercase ASCII letters
+	// charSetUpper defines the set of uppercase ASCII letters.
 	charSetUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	// charSetNumbers defines the set of decimal digits
+	// charSetNumbers defines the set of decimal digits.
 	charSetNumbers = "0123456789"
 
-	// charSetSpecial defines the set of special characters
+	// charSetSpecial defines the set of special characters.
 	charSetSpecial = "!@#$%^&*()_+-=[]{}|;:,.<>?"
 
-	// allChars combines all character sets for password generation
+	// allChars combines all character sets for password generation.
 	allChars = charSetLower + charSetUpper + charSetNumbers + charSetSpecial
 )
 
 // secureRandomInt generates a cryptographically secure random integer in the range [0, max).
 // It uses crypto/rand to ensure high-quality randomness suitable for security-sensitive operations.
-func secureRandomInt(max int) (int, error) {
-	bigInt, err := rand.Int(rand.Reader, big.NewInt(int64(max)))
+func secureRandomInt(upperBound int) (int, error) {
+	bigInt, err := rand.Int(rand.Reader, big.NewInt(int64(upperBound)))
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("generating random number: %w", err)
 	}
 
 	return int(bigInt.Int64()), nil
@@ -54,13 +49,13 @@ func Generate(length int) (string, error) {
 	result := make([]byte, length)
 
 	// Fill positions with random characters from all classes
-	for i := range length {
+	for index := range length {
 		idx, err := secureRandomInt(len(allChars))
 		if err != nil {
 			return "", err
 		}
 
-		result[i] = allChars[idx]
+		result[index] = allChars[idx]
 	}
 
 	return string(result), nil

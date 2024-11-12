@@ -5,7 +5,7 @@
 [![Build Status](https://github.com/idelchi/gogen/actions/workflows/github-actions.yml/badge.svg)](https://github.com/idelchi/gogen/actions/workflows/github-actions.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`gogen` is a tool for generating cryptographic keys and password hashes.
+`gogen` is a tool for generating cryptographic keys, passwords and password hashes.
 
 ## Installation
 
@@ -58,6 +58,30 @@ gogen key
 gogen key -l 64
 
 # Key length must be between 32-512 bytes and a multiple of 4
+```
+
+#### `password` - Generate a password
+
+Generate secure passwords of configurable length.
+
+**Flags and Environment Variables:**
+
+| Flag           | Environment Variable | Description                        | Default | Valid Range |
+| -------------- | -------------------- | ---------------------------------- | ------- | ----------- |
+| `-l, --length` | `GOGEN_LENGTH`       | Length of the password to generate | 16      | -           |
+| `-h, --help`   | -                    | Help for password command          | -       | -           |
+
+Examples:
+
+```sh
+# Generate a 16-character password (default)
+gogen password
+
+# Generate a 20-character password
+gogen password -l 20
+
+# Using the shorter alias
+gogen pw
 ```
 
 #### `hash` - Hash a password
