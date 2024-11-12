@@ -14,10 +14,10 @@ func NewRootCommand(cfg *config.Config, version string) *cobra.Command {
 
 	root.Use = "gogen [flags] command [flags]"
 	root.Short = "Generate cryptographic keys and password hashes"
-	root.Long = "gogen is a tool for generating cryptographic keys and password hashes."
+	root.Long = "gogen is a tool for generating cryptographic keys, passwords and password hashes."
 
 	root.Flags().BoolP("show", "s", false, "Show the configuration and exit")
-	root.AddCommand(NewHashCommand(cfg), NewKeyCommand(cfg))
+	root.AddCommand(NewHashCommand(cfg), NewKeyCommand(cfg), NewPasswordCommand(cfg))
 
 	return root
 }

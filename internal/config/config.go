@@ -10,6 +10,12 @@ import (
 // ErrUsage indicates an error in command-line usage or configuration.
 var ErrUsage = errors.New("usage error")
 
+// Password holds parameters for password generation.
+type Password struct {
+	// Length specifies the password length
+	Length int `validate:"min=1"`
+}
+
 // Generate holds parameters for key generation.
 type Generate struct {
 	// Length specifies the key length in bytes (32-512, must be multiple of 32)
@@ -17,7 +23,7 @@ type Generate struct {
 }
 
 // Password holds parameters for password hashing operations.
-type Password struct {
+type Hash struct {
 	// Password is the input password to be hashed
 	Password string `mapstructure:"-" validate:"required"`
 
@@ -36,7 +42,10 @@ type Config struct {
 	// Generate contains key generation settings
 	Generate Generate `mapstructure:",squash"`
 
-	// Password contains password hashing settings
+	// Hash contains password hashing settings
+	Hash Hash `mapstructure:",squash"`
+
+	// Password contains password generation settings
 	Password Password `mapstructure:",squash"`
 }
 

@@ -24,18 +24,18 @@ func NewHashCommand(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("reading password: %w", err)
 			}
 
-			cfg.Password.Password = arg
+			cfg.Hash.Password = arg
 
-			return cobraext.Validate(cfg, &cfg.Password)
+			return cobraext.Validate(cfg, &cfg.Hash)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			if cfg.Password.Benchmark {
-				hash.Benchmark(cfg.Password.Password)
+			if cfg.Hash.Benchmark {
+				hash.Benchmark(cfg.Hash.Password)
 
 				return nil
 			}
 
-			hash, err := hash.Password(cfg.Password.Password, cfg.Password.Cost)
+			hash, err := hash.Password(cfg.Hash.Password, cfg.Hash.Cost)
 			if err != nil {
 				return fmt.Errorf("generating hash: %w", err)
 			}
