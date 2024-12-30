@@ -32,6 +32,9 @@ type Hash struct {
 
 	// Benchmark indicates whether to run performance benchmarks
 	Benchmark bool
+
+	// Type specifies the hashing algorithm (bcrypt, argon)
+	Type string `validate:"oneof=bcrypt argon"`
 }
 
 // Config holds the application's configuration parameters.

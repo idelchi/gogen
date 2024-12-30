@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/idelchi/gogen/internal/config"
+	"github.com/idelchi/gogen/pkg/argon"
 	"github.com/idelchi/gogen/pkg/cobraext"
 	"github.com/idelchi/gogen/pkg/hash"
 )
@@ -29,18 +30,33 @@ func NewHashCommand(cfg *config.Config) *cobra.Command {
 			return cobraext.Validate(cfg, &cfg.Hash)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
+			if cfg.Hash.Type == "argon" && cfg.Hash.Benchmark {
+				return fmt.Errorf("%w: argon does not support benchmarking", config.ErrUsage)
+			}
+
 			if cfg.Hash.Benchmark {
 				hash.Benchmark(cfg.Hash.Password)
 
 				return nil
 			}
 
-			hash, err := hash.Password(cfg.Hash.Password, cfg.Hash.Cost)
+			var hashedPassword string
+			var err error
+
+			switch cfg.Hash.Type {
+			case "bcrypt":
+				hashedPassword, err = hash.Password(cfg.Hash.Password, cfg.Hash.Cost)
+			case "argon":
+				hashedPassword, err = argon.Password(cfg.Hash.Password)
+			default:
+				return fmt.Errorf("%w: invalid hash type", config.ErrUsage)
+			}
+
 			if err != nil {
 				return fmt.Errorf("generating hash: %w", err)
 			}
 
-			fmt.Print(hash) //nolint: forbidigo
+			fmt.Print(hashedPassword) //nolint: forbidigo
 
 			return nil
 		},
@@ -50,6 +66,7 @@ func NewHashCommand(cfg *config.Config) *cobra.Command {
 
 	cmd.Flags().IntP("cost", "c", cost, "Cost of the password hash (4-31)")
 	cmd.Flags().BoolP("benchmark", "b", false, "Run a benchmark on the password hash")
+	cmd.Flags().StringP("type", "t", "bcrypt", "Hashing algorithm to use (bcrypt, argon2id)")
 
 	return cmd
 }
