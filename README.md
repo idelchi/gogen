@@ -88,11 +88,13 @@ Hash passwords using `bcrypt` or `argon2` with configurable cost and benchmarkin
 
 **Flags and Environment Variables:**
 
-| Flag              | Environment Variable | Description                                                   | Default | Valid Range        |
-| ----------------- | -------------------- | ------------------------------------------------------------- | ------- | ------------------ |
-| `-t, --type`      | `GOGEN_TYPE`         | Hashing algorithm to use                                      | bcrypt  | `bcrypt`, `argon2` |
-| `-c, --cost`      | `GOGEN_COST`         | Cost of the password hash. Only valid for `bcrypt`            | 12      | 4-31               |
-| `-b, --benchmark` | `GOGEN_BENCHMARK`    | Run a benchmark on the password hash. Only valid for `bcrypt` | `false` | -                  |
+| Flag              | Environment Variable | Description                           | Default | Valid Range        |
+| ----------------- | -------------------- | ------------------------------------- | ------- | ------------------ |
+| `-t, --type`      | `GOGEN_TYPE`         | Hashing algorithm to use              | bcrypt  | `bcrypt`, `argon2` |
+| `-c, --cost`      | `GOGEN_COST`         | Cost of the password hash.`           | 12      | 4-31               |
+| `-b, --benchmark` | `GOGEN_BENCHMARK`    | Run a benchmark on the password hash. | `false` | -                  |
+
+The `--cost` and `--benchmark` flags are only valid for the `bcrypt` algorithm.
 
 Examples:
 
