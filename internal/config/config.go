@@ -32,6 +32,9 @@ type Hash struct {
 
 	// Benchmark indicates whether to run performance benchmarks
 	Benchmark bool
+
+	// Type specifies the hashing algorithm (bcrypt, argon)
+	Type string `validate:"oneof=bcrypt argon"`
 }
 
 // Config holds the application's configuration parameters.
@@ -57,7 +60,7 @@ func (c Config) Display() bool {
 // Validate performs configuration validation using the validator package.
 // It returns a wrapped ErrUsage if any validation rules are violated.
 func (c Config) Validate(config any) error {
-	validator := validator.NewValidator()
+	validator := validator.New()
 
 	if err := registerMultiple(validator); err != nil {
 		return fmt.Errorf("registering multiple: %w", err)

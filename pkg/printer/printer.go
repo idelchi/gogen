@@ -1,6 +1,6 @@
 // Package printer provides a simple way to print messages to the standard output and standard error streams.
 //
-//nolint:forbidigo
+//nolint:forbidigo	// Package prints out to console.
 package printer
 
 import (

@@ -34,10 +34,10 @@ func (v *Validator) Validator() *validator.Validate {
 	return v.validate
 }
 
-// NewValidator creates and initializes a new Validator instance with English translations.
+// New creates and initializes a new Validator instance with English translations.
 // It sets up the universal translator with English locale and registers the default
 // English translations for validation error messages.
-func NewValidator() *Validator {
+func New() *Validator {
 	en := en.New()
 	uni := ut.New(en, en)
 	trans, _ := uni.GetTranslator("en")

@@ -49,7 +49,7 @@ func Password(password string, cost int) (string, error) {
 // from MinCost to MaxCost, measuring both hashing and verification time.
 // The output is formatted as a Markdown table.
 //
-//nolint:forbidigo
+//nolint:forbidigo	// Function prints out to the console.
 func Benchmark(password string) {
 	pwd := []byte(password)
 

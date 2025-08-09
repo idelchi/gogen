@@ -57,7 +57,7 @@ func NewDefaultRootCommand(version string, funcs ...func(*cobra.Command, []strin
 // - https://github.com/containerd/nerdctl/blob/242e6fc6e861b61b878bd7df8bf25e95674c036d/cmd/nerdctl/main.go#L401-L418
 func UnknownSubcommandAction(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
-		return cmd.Help() //nolint: wrapcheck
+		return cmd.Help() //nolint: wrapcheck	// Error does not need additional wrapping.
 	}
 
 	err := fmt.Sprintf("unknown subcommand %q for %q", args[0], cmd.Name())
@@ -69,5 +69,5 @@ func UnknownSubcommandAction(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return errors.New(err) //nolint: err113
+	return errors.New(err) //nolint: err113		// Error does not need additional wrapping.
 }

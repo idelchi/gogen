@@ -1,11 +1,13 @@
 module github.com/idelchi/gogen
 
-go 1.23.0
+go 1.24
 
 require (
+	github.com/alexedwards/argon2id v1.0.0
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.22.1
+	github.com/google/uuid v1.6.0
 	github.com/idelchi/godyl v0.0.0-20241029091045-af98851a0cee
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0

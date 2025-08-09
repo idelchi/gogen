@@ -12,6 +12,8 @@ import (
 
 // NewKeyCommand creates the key generation subcommand.
 // It handles generating cryptographic keys of specified length.
+//
+//nolint:forbidigo	// Command prints out to the console.
 func NewKeyCommand(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "key",
@@ -27,7 +29,7 @@ func NewKeyCommand(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("generating key: %w", err)
 			}
 
-			fmt.Print(key.AsHex()) //nolint: forbidigo
+			fmt.Print(key.AsHex())
 
 			return nil
 		},

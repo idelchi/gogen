@@ -12,6 +12,8 @@ import (
 
 // NewPasswordCommand creates the key generation subcommand.
 // It handles generating cryptographic keys of specified length.
+//
+//nolint:forbidigo	// Command prints out to the console.
 func NewPasswordCommand(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "password",
@@ -23,12 +25,12 @@ func NewPasswordCommand(cfg *config.Config) *cobra.Command {
 			return cobraext.Validate(cfg, &cfg.Password)
 		},
 		RunE: func(_ *cobra.Command, _ []string) error {
-			password, err := pw.Generate(cfg.Password.Length)
+			password, err := pw.Generate(cfg.Password.Length, true)
 			if err != nil {
 				return fmt.Errorf("generating password: %w", err)
 			}
 
-			fmt.Print(password) //nolint: forbidigo
+			fmt.Print(password)
 
 			return nil
 		},

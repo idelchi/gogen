@@ -43,7 +43,8 @@ func New(length int) (Key, error) {
 	}
 
 	if res != length {
-		return nil, fmt.Errorf("generated %d bytes instead of requested %d bytes", res, length) //nolint: err113
+		//nolint: err113	// Error does not need additional wrapping.
+		return nil, fmt.Errorf("generated %d bytes instead of requested %d bytes", res, length)
 	}
 
 	return key, nil

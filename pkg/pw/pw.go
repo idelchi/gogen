@@ -19,15 +19,16 @@ const (
 	// charSetNumbers defines the set of decimal digits.
 	charSetNumbers = "0123456789"
 
-	// charSetSpecial defines the set of special characters.
-	charSetSpecial = "!@#$%^&*()_+-=[]{}|;:,.<>?"
+	// charSetSpecial an opinionated the set of special characters.
+	// Avoids characters that cause issues with command-line usage, e.g.
+	// no pipes, redirects, globs, quotes, escapes, or command substitutions.
+	charSetSpecial = "@#%^_+-=:,."
 
 	// allChars combines all character sets for password generation.
 	allChars = charSetLower + charSetUpper + charSetNumbers + charSetSpecial
 )
 
 // secureRandomInt generates a cryptographically secure random integer in the range [0, max).
-// It uses crypto/rand to ensure high-quality randomness suitable for security-sensitive operations.
 func secureRandomInt(upperBound int) (int, error) {
 	bigInt, err := rand.Int(rand.Reader, big.NewInt(int64(upperBound)))
 	if err != nil {
@@ -38,24 +39,63 @@ func secureRandomInt(upperBound int) (int, error) {
 }
 
 // Generate creates a password of the specified length using a mix of character classes.
-// The generated password uses a diverse character set including lowercase, uppercase,
-// numbers, and special characters, selected using cryptographically secure random numbers.
-func Generate(length int) (string, error) {
+// If requireAll is true, ensures at least one character from each character set.
+//
+//nolint:gocognit,nestif	// Function complexity is acceptable.
+func Generate(length int, requireAll bool) (string, error) {
 	if length <= 0 {
-		return "", errors.New("length must be greater than 0") //nolint:err113
+		//nolint:err113 // Occasional dynamic errors are fine.
+		return "", errors.New("length must be greater than 0")
 	}
 
-	// Initialize password builder
+	if requireAll && length < 4 {
+		//nolint:err113 // Occasional dynamic errors are fine.
+		return "", errors.New("length must be at least 4 when requiring all character types")
+	}
+
 	result := make([]byte, length)
 
-	// Fill positions with random characters from all classes
-	for index := range length {
-		idx, err := secureRandomInt(len(allChars))
-		if err != nil {
-			return "", err
+	if requireAll {
+		// Place one required character from each set
+		charSets := []string{charSetLower, charSetUpper, charSetNumbers, charSetSpecial}
+
+		for index, charset := range charSets {
+			idx, err := secureRandomInt(len(charset))
+			if err != nil {
+				return "", err
+			}
+
+			result[index] = charset[idx]
 		}
 
-		result[index] = allChars[idx]
+		// Fill remaining positions
+		for index := 4; index < length; index++ {
+			idx, err := secureRandomInt(len(allChars))
+			if err != nil {
+				return "", err
+			}
+
+			result[index] = allChars[idx]
+		}
+
+		// Shuffle to avoid predictable positioning
+		for index := len(result) - 1; index > 0; index-- {
+			j, err := secureRandomInt(index + 1)
+			if err != nil {
+				return "", err
+			}
+
+			result[index], result[j] = result[j], result[index]
+		}
+	} else {
+		for index := range length {
+			idx, err := secureRandomInt(len(allChars))
+			if err != nil {
+				return "", err
+			}
+
+			result[index] = allChars[idx]
+		}
 	}
 
 	return string(result), nil

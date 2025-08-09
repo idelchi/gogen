@@ -46,7 +46,6 @@ Generate keys of configurable length.
 | Flag           | Environment Variable | Description                   | Default | Valid Range             |
 | -------------- | -------------------- | ----------------------------- | ------- | ----------------------- |
 | `-l, --length` | `GOGEN_LENGTH`       | Length of the key to generate | 32      | 32-512 (multiple of 32) |
-| `-h, --help`   | -                    | Help for key command          | -       | -                       |
 
 Examples:
 
@@ -69,7 +68,6 @@ Generate secure passwords of configurable length.
 | Flag           | Environment Variable | Description                        | Default | Valid Range |
 | -------------- | -------------------- | ---------------------------------- | ------- | ----------- |
 | `-l, --length` | `GOGEN_LENGTH`       | Length of the password to generate | 16      | -           |
-| `-h, --help`   | -                    | Help for password command          | -       | -           |
 
 Examples:
 
@@ -86,15 +84,15 @@ gogen pw
 
 #### `hash` - Hash a password
 
-Hash passwords using bcrypt with configurable cost and benchmarking capabilities.
+Hash passwords using `bcrypt` or `argon2` with configurable cost and benchmarking capabilities.
 
 **Flags and Environment Variables:**
 
-| Flag              | Environment Variable | Description                          | Default | Valid Range |
-| ----------------- | -------------------- | ------------------------------------ | ------- | ----------- |
-| `-c, --cost`      | `GOGEN_COST`         | Cost of the password hash            | 12      | 4-31        |
-| `-b, --benchmark` | `GOGEN_BENCHMARK`    | Run a benchmark on the password hash | `false` | -           |
-| `-h, --help`      | -                    | Help for hash command                | -       | -           |
+| Flag              | Environment Variable | Description                                                   | Default | Valid Range        |
+| ----------------- | -------------------- | ------------------------------------------------------------- | ------- | ------------------ |
+| `-t, --type`      | `GOGEN_TYPE`         | Hashing algorithm to use                                      | bcrypt  | `bcrypt`, `argon2` |
+| `-c, --cost`      | `GOGEN_COST`         | Cost of the password hash. Only valid for `bcrypt`            | 12      | 4-31               |
+| `-b, --benchmark` | `GOGEN_BENCHMARK`    | Run a benchmark on the password hash. Only valid for `bcrypt` | `false` | -                  |
 
 Examples:
 
@@ -107,6 +105,9 @@ gogen hash -c 14 password
 
 # Run benchmark to measure hashing performance across costs
 gogen hash -b password
+
+# Hash a password using argon2
+gogen hash -t argon password
 ```
 
 For detailed help on any command:

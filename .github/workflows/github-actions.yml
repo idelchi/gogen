@@ -47,3 +47,5 @@ jobs:
     needs: info
     permissions:
       contents: write
+    with:
+      config: .devenv/settings/.goreleaser.yaml
