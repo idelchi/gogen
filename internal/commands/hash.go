@@ -31,12 +31,13 @@ func NewHashCommand(cfg *config.Config) *cobra.Command {
 
 			return cobraext.Validate(cfg, &cfg.Hash)
 		},
-		RunE: func(_ *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			if cfg.Hash.Type == "argon" {
 				if cfg.Hash.Benchmark {
 					return fmt.Errorf("%w: argon does not support benchmarking", config.ErrUsage)
 				}
-				if cfg.Hash.Cost != 0 {
+
+				if cmd.Flags().Lookup("cost").Changed {
 					return fmt.Errorf("%w: argon does not support custom cost", config.ErrUsage)
 				}
 			}
