@@ -1,15 +1,14 @@
 version: "3"
 
-# .env file variables are available here, with the exception of `includes`,
-# where externally defined environment variables and regular variables are available.
-# It's therefore recommended to also source the .env file before running.
-dotenv: ["taskfile.env"]
-
 vars:
   # This environment variable must exist (i.e it's not enough that it's set in the .env file)
   DEVENV: .devenv
 
 env:
+  CONFIG_DIR: "{{.DEVENV}}/settings"
+  SCRIPTS_DIR: "{{.DEVENV}}/scripts"
+  BUILD_DIR: "{{ .ROOT_DIR | toSlash }}/.build"
+
   CSPELL_CONFIG: ./settings/cspell.yaml
 
 includes:
@@ -38,7 +37,7 @@ tasks:
     cmds:
       - docker rm -f devenv > /dev/null 2>&1 || true
       - docker compose -f {{.DEVENV}}/compose.yaml build --build-arg CACHEBUST=$(date +%s) devenv
-      - docker compose -f {{.DEVENV}}/compose.yaml run --remove-orphans --rm devenv {{.CLI_ARGS}}
+      - docker compose -f {{.DEVENV}}/compose.yaml run --rm devenv {{.CLI_ARGS}}
     interactive: true
 
   push:
@@ -57,23 +56,26 @@ tasks:
     - task: go:clean
 
   info:
-    - task: git
+    - task: aux
 
   format:
-    - task: format:default
-    - task: go:format
+    cmds:
+      - task: format:default
+      - task: go:format
 
   lint:
     deps:
-      - lint:default
-      - go:lint
+      - task: lint:default
+      - task: go:lint
 
   build:
-    - task: go:build
-    - task: go:release
+    cmds:
+      - task: go:build
+      - task: go:release
 
   test:
-    - task: go:quality
+    cmds:
+      - task: go:quality
 
   all:
     desc: run all available tasks

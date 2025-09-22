@@ -9,14 +9,6 @@
 
 ## Installation
 
-### From source
-
-```sh
-go install github.com/idelchi/gogen@latest
-```
-
-### From installation script
-
 ```sh
 curl -sSL https://raw.githubusercontent.com/idelchi/gogen/refs/heads/main/install.sh | sh -s -- -d ~/.local/bin
 ```
@@ -27,7 +19,7 @@ curl -sSL https://raw.githubusercontent.com/idelchi/gogen/refs/heads/main/instal
 gogen [flags] command [flags]
 ```
 
-### Global Flags and Environment Variables
+### Configuration
 
 | Flag            | Environment Variable | Description                     | Default |
 | --------------- | -------------------- | ------------------------------- | ------- |
@@ -41,7 +33,7 @@ gogen [flags] command [flags]
 
 Generate keys of configurable length.
 
-**Flags and Environment Variables:**
+##### Configuration
 
 | Flag           | Environment Variable | Description                   | Default | Valid Range             |
 | -------------- | -------------------- | ----------------------------- | ------- | ----------------------- |
@@ -63,7 +55,7 @@ gogen key -l 64
 
 Generate secure passwords of configurable length.
 
-**Flags and Environment Variables:**
+##### Configuration
 
 | Flag           | Environment Variable | Description                        | Default | Valid Range |
 | -------------- | -------------------- | ---------------------------------- | ------- | ----------- |
@@ -86,7 +78,7 @@ gogen pw
 
 Hash passwords using `bcrypt` or `argon2` with configurable cost and benchmarking capabilities.
 
-**Flags and Environment Variables:**
+##### Configuration
 
 | Flag              | Environment Variable | Description                           | Default | Valid Range        |
 | ----------------- | -------------------- | ------------------------------------- | ------- | ------------------ |
@@ -109,7 +101,7 @@ gogen hash -c 14 password
 gogen hash -b password
 
 # Hash a password using argon2
-gogen hash -t argon password
+gogen hash -t argon2 password
 ```
 
 For detailed help on any command:

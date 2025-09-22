@@ -48,8 +48,10 @@ func NewHashCommand(cfg *config.Config) *cobra.Command {
 				return nil
 			}
 
-			var hashedPassword string
-			var err error
+			var (
+				hashedPassword string
+				err            error
+			)
 
 			switch cfg.Hash.Type {
 			case "bcrypt":
@@ -74,7 +76,7 @@ func NewHashCommand(cfg *config.Config) *cobra.Command {
 
 	cmd.Flags().IntP("cost", "c", cost, "Cost of the password hash (4-31)")
 	cmd.Flags().BoolP("benchmark", "b", false, "Run a benchmark on the password hash")
-	cmd.Flags().StringP("type", "t", "bcrypt", "Hashing algorithm to use (bcrypt, argon2id)")
+	cmd.Flags().StringP("type", "t", "bcrypt", "Hashing algorithm to use (bcrypt, argon2)")
 
 	return cmd
 }

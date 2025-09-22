@@ -11,6 +11,7 @@ import (
 // Returns a string in the format: $argon2id$v=19$m=65536,t=3,p=2$<salt>$<hash>.
 func Password(password string) (string, error) {
 	defaults := argon2id.DefaultParams
+
 	defaults.Iterations = 3
 	defaults.Parallelism = 4
 

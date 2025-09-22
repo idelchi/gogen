@@ -12,7 +12,8 @@ import (
 func Hash(str string) string {
 	hasher := sha512.New()    // Create a new sha512 hasher.
 	hasher.Write([]byte(str)) // Write the input string to the hasher.
-	hash := hasher.Sum(nil)   // Compute the sha512 hash.
+
+	hash := hasher.Sum(nil) // Compute the sha512 hash.
 
 	// Return the hexadecimal encoding of the hash.
 	return hex.EncodeToString(hash)
